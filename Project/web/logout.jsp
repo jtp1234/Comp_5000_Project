@@ -13,7 +13,12 @@
     </head>
     <body>
         <%
-            response.sendRedirect("login.jsp");
+        Cookie deleteCookie = new Cookie("userId", null);
+        deleteCookie.setMaxAge(0);
+        deleteCookie.setPath("/");
+        response.addCookie(deleteCookie);
+
+        response.sendRedirect("login.jsp");
         %>
     </body>
 </html>

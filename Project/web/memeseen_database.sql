@@ -18,19 +18,24 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 --
 -- Database: `library_catalog`
 --
-CREATE DATABASE `library_catalog` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `library_catalog`;
+CREATE DATABASE `memeseen_database` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `memeseen_database`;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `authors`
+-- Table structure for table `posts`
 --
 
-CREATE TABLE IF NOT EXISTS `authors` (
-  `author_id` int(10) NOT NULL AUTO_INCREMENT,
-  `author_name` varchar(100) NOT NULL,
-  PRIMARY KEY (`author_id`)
+CREATE TABLE IF NOT EXISTS `posts` (
+  `post_id` int(10) NOT NULL AUTO_INCREMENT,
+  `author_id` int(10) NOT NULL,
+  `created` timestamp NOT NULL,
+  `post_title` varchar(100) NOT NULL,
+  `post_description` varchar(1000) NOT NULL,
+  `image_url` varchar(1000) NOT NULL,
+  `votes` int(10) NOT NULL,
+  PRIMARY KEY (`post_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -39,13 +44,12 @@ CREATE TABLE IF NOT EXISTS `authors` (
 -- Table structure for table `books`
 --
 
-CREATE TABLE IF NOT EXISTS `books` (
-  `book_id` int(10) NOT NULL AUTO_INCREMENT,
-  `topic_id` int(10) NOT NULL,
-  `book_name` varchar(100) NOT NULL,
-  `author_id` int(10) NOT NULL,
-  `is_available` tinyint(1) NOT NULL,
-  PRIMARY KEY (`book_id`)
+CREATE TABLE IF NOT EXISTS `users` (
+  `user_id` int(10) NOT NULL AUTO_INCREMENT,
+  `username` varchar(100) NOT NULL,
+  `created` timestamp NOT NULL,
+  `password` varchar(100) NOT NULL,
+  PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -54,34 +58,12 @@ CREATE TABLE IF NOT EXISTS `books` (
 -- Table structure for table `reservations`
 --
 
-CREATE TABLE IF NOT EXISTS `reservations` (
-  `user_id` int(10) NOT NULL,
-  `book_id` int(10) NOT NULL
+CREATE TABLE IF NOT EXISTS `comments` (
+  `comment_id` int(10) NOT NULL AUTO_INCREMENT,
+  `post_id` int(10) NOT NULL,
+  `author_id` int(10) NOT NULL,
+  `created` timestamp NOT NULL,
+  `comment` varchar(1000) NOT NULL,
+  PRIMARY KEY (`comment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `topics`
---
-
-CREATE TABLE IF NOT EXISTS `topics` (
-  `topic_id` int(10) NOT NULL AUTO_INCREMENT,
-  `topic_name` varchar(200) NOT NULL,
-  PRIMARY KEY (`topic_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `users`
---
-
-CREATE TABLE IF NOT EXISTS `users` (
-  `user_id` int(10) NOT NULL AUTO_INCREMENT,
-  `fname` varchar(50) NOT NULL,
-  `lname` varchar(50) NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `password` varchar(50) NOT NULL,
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;

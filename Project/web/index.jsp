@@ -9,12 +9,11 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Library Catalog</title>
+        <title>MemeSeen</title>
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
         <jsp:include page="header.jsp"/>
-        <h1>Hello World!</h1>
         
         <%
         try {
@@ -24,7 +23,7 @@
         }
         Connection connection = null;
         try {
-            String dbURL = "jdbc:mysql://localhost:3306/library_catalog";
+            String dbURL = "jdbc:mysql://localhost:3306/memeseen_database";
             String username = "root";
             String password = "admin";
             connection = DriverManager.getConnection(dbURL, username, password);
@@ -33,79 +32,92 @@
                 t.printStackTrace();
             }
         }
-        String topicQuery = "SELECT * FROM topics";
-        Statement topicStatement = connection.createStatement();
-        ResultSet topicResult = topicStatement.executeQuery(topicQuery);
-        %>
+
+        String sort = request.getParameter("sort");
+        String postQuery;
+        if (sort != null && sort.equals("new")) {
+            postQuery = "SELECT * FROM posts ORDER BY created DESC";
+        } else if(sort != null && sort.equals("popular")) {
+            postQuery = "SELECT * FROM posts ORDER BY votes DESC";
+        } else {
+            postQuery = "SELECT * FROM posts ORDER BY post_title";
+        }
         
-        <form method="POST">
-            <select name="topic">
-                <option value="*">All</option>
-                <%
-                while(topicResult.next()) {
-                    String topicValue = topicResult.getString("topic_name");
-                %>
-                    <option value="<%out.print(topicValue);%>"><%out.print(topicValue);%></option>
-                <%
-                }    
-                %>
-            </select>
-            <input type="submit">
-        </form>
-        <%
-        String topic = null;
-        int topicId = -1;
-        if(request.getMethod().equals("POST")) {
-            topic = request.getParameter("topic");
-            if (!topic.equals("*")) {
-                String topicIdQuery = "SELECT topic_id FROM topics WHERE topic_name = \"" + topic + "\"";
-                ResultSet topicIdResult = connection.createStatement().executeQuery(topicIdQuery);
-                topicIdResult.next();
-                topicId = topicIdResult.getInt("topic_id");
-            } else {
-                topic = null;
-            }
-        }    
-        
-        String bookQuery = "SELECT * FROM books" + (topicId == -1 ? "" : " WHERE topic_id = " + topicId);
-        Statement bookStatement = connection.createStatement();
-        ResultSet bookResult = bookStatement.executeQuery(bookQuery);
+        Statement postStatement = connection.createStatement();
+        ResultSet postResult = postStatement.executeQuery(postQuery);
         %>
-        <table>
-            <tr>
-                <th>Book Name</th>
-                <th>Topic</th>
-                <th>Author</th>
-                <th>Action</th>
-            </tr>
+        <div class="container center">
             <%
-            while(bookResult.next()) {
-                String bookName = bookResult.getString("book_name");
-                int bookId = bookResult.getInt("book_id");
-                int bookTopicId = bookResult.getInt("topic_id");
-                int bookAuthorId = bookResult.getInt("author_id");
+            while(postResult.next()) {
+                int post_id = postResult.getInt("post_id");
+                int author_id = postResult.getInt("author_id");
+                String title = postResult.getString("post_title");
+                String description = postResult.getString("post_description");
+                String imageURL = postResult.getString("image_url");
+                int votes = postResult.getInt("votes");
                 
-                String bookTopicName, bookAuthorName;
+                String authorUsername;
                 
-                String topicNameQuery = "SELECT topic_name FROM topics WHERE topic_id = " + bookTopicId;
-                ResultSet topicNameResult = connection.createStatement().executeQuery(topicNameQuery);
-                topicNameResult.next();
-                bookTopicName = topicNameResult.getString("topic_name");
+                String authorUsernameQuery = "SELECT username FROM users WHERE user_id = " + author_id;
+                ResultSet authorUsernameResult = connection.createStatement().executeQuery(authorUsernameQuery);
+                authorUsernameResult.next();
+                authorUsername = authorUsernameResult.getString("username");
                 
-                String authorNameQuery = "SELECT author_name FROM authors WHERE author_id = " + bookAuthorId;
-                ResultSet authorNameResult = connection.createStatement().executeQuery(authorNameQuery);
-                authorNameResult.next();
-                bookAuthorName = authorNameResult.getString("author_name");
+                String commentsQuery = "SELECT * FROM comments WHERE post_id = " + post_id;
+                ResultSet commentsResult = connection.createStatement().executeQuery(commentsQuery);
             %>
-            <tr>
-                <td><%out.print(bookName);%></td>
-                <td><%out.print(bookTopicName);%></td>
-                <td><%out.print(bookAuthorName);%></td>
-                <td><a href="reserve.jsp?book=<%out.print(bookId);%>">reserve</a></td>
-            </tr>
+            <div class="post xymargins">
+                <img src="<%out.print(imageURL);%>" height="512" width="512"/>
+                <div class="container justify">
+                    <form method="POST" action="vote.jsp">
+                        <input type="hidden" name="postId" value="<%out.print(post_id);%>">
+                        <input type="hidden" name="voteUp" value="true">
+                        <input type="submit"  value="+">
+                    </form>
+                    <h1><%out.print(votes);%></h1>
+                    <form method="POST" action="vote.jsp">
+                        <input type="hidden" name="postId" value="<%out.print(post_id);%>">
+                        <input type="hidden" name="voteUp" value="false">
+                        <input type="submit"  value="-">
+                    </form>
+                </div>
+                <div class="container justify">
+                    <h1 class="pull-left"><%out.print(title);%></h1>
+                    <h2 class="pull-right">author: <%out.print(authorUsername);%></h2>
+                </div>
+                <div class="container">
+                    <p><%out.print(description);%></p>
+                </div>
+                <div class="container">
+                    <h3>Comments:</h3>
+                    <%
+                    while(commentsResult.next()) {
+                        int comment_id = commentsResult.getInt("comment_id");
+                        int commenter_id = commentsResult.getInt("author_id");
+                        String comment = commentsResult.getString("comment");
+                        String commenterUsername;
+
+                        String commenterUsernameQuery = "SELECT username FROM users WHERE user_id = " + commenter_id;
+                        ResultSet commenterUsernameResult = connection.createStatement().executeQuery(commenterUsernameQuery);
+                        commenterUsernameResult.next();
+                        commenterUsername = commenterUsernameResult.getString("username");
+                    %>
+                    <div class="container">
+                        <p><%out.print(commenterUsername);%>: <%out.print(comment);%></p>
+                    </div>
+                    <%}%>
+                </div>
+                <div class="container xymargins">
+                    <form method="POST" action="comment.jsp">
+                        <input type="hidden" name="postId" value="<%out.print(post_id);%>">
+                        <textarea name="comment">Enter a comment.</textarea>
+                        <input type="submit">
+                    </form>
+                </div>
+            </div>
             <%
             }
             %>
-        </table>
+        </div>
     </body>
 </html>

@@ -26,7 +26,7 @@
                 }
                 Connection connection = null;
                 try {
-                    String dbURL = "jdbc:mysql://localhost:3306/library_catalog";
+                    String dbURL = "jdbc:mysql://localhost:3306/memeseen_database";
                     String username = "root";
                     String password = "admin";
                     connection = DriverManager.getConnection(dbURL, username, password);
@@ -49,6 +49,7 @@
                             c.setMaxAge(60*60*24);
                             c.setPath("/");
                             response.addCookie(c);
+                            response.sendRedirect("index.jsp");
                         } else {
                             message = "Incorrect password!";
                         }
@@ -57,8 +58,6 @@
                     }
 
                 } else if (request.getParameter("formType").equals("register")) {
-                    String firstName = request.getParameter("firstName");
-                    String lastName = request.getParameter("lastName");
                     String username = request.getParameter("username");
                     String password = request.getParameter("password");
                     String verifyPassword = request.getParameter("verifyPassword");
@@ -69,8 +68,7 @@
                         message = "User already exists!";
                     } else {
                         if (password.equals(verifyPassword)) {
-                            String createUser = "INSERT INTO users (fname, lname, username, password) VALUES (\"" + firstName + "\", \""
-                                + lastName + "\", \"" + username + "\", \"" + password + "\");"; 
+                            String createUser = "INSERT INTO users (username, password) VALUES (\"" + username + "\", \"" + password + "\");"; 
                             connection.createStatement().executeUpdate(createUser);
                             message = "User created!";
                         } else {
@@ -81,27 +79,29 @@
                 } 
             }
             %>
-            <h1>Login</h1>
-            <form method="POST">
-                <input type="hidden" name="formType" value="login"/>
-                Username: <input type="text" name="username"/><br>
-                Password: <input type="text" name="password"/><br>
-                <input type="submit"/>
-            </form>
+            <div class="post xymargins container">
+                <h1>Login</h1>
+                <form method="POST">
+                    <input type="hidden" name="formType" value="login"/>
+                    Username: <input type="text" name="username"/><br>
+                    Password: <input type="text" name="password"/><br>
+                    <input type="submit"/>
+                </form>
+            </div>
 
-            <h1>Register</h1>
-            <form method="POST">
-                <input type="hidden" name="formType" value="register"/>
-                First Name: <input type="text" name="firstName"/><br>
-                Last Name: <input type="text" name="lastName"/><br>
-                Username: <input type="text" name="username"/><br>
-                Password: <input type="text" name="password"/><br>
-                Confirm Password: <input type="text" name="verifyPassword"/><br>
-                <input type="submit"/>
-            </form>
-            <%if (message != null) {%>
-            <h1><%out.print(message);%></h1>
-            <%}%>
+            <div class="post xymargins container">
+                <h1>Register</h1>
+                <form method="POST">
+                    <input type="hidden" name="formType" value="register"/>
+                    Username: <input type="text" name="username"/><br>
+                    Password: <input type="text" name="password"/><br>
+                    Confirm Password: <input type="text" name="verifyPassword"/><br>
+                    <input type="submit"/>
+                </form>
+                <%if (message != null) {%>
+                <h1><%out.print(message);%></h1>
+                <%}%>
+            </div>
         </div>
     </body>
 </html>

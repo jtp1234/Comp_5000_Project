@@ -1,39 +1,22 @@
-INSERT INTO books
-	(book_id, topic_id, book_name, author_id, is_available)
+INSERT INTO posts
+	(post_id, author_id, created, post_title, post_description,
+             image_url, votes)
 VALUES
-	(1, 1, "Intro XML", 1, true);
+	(1, 1, '2018-04-21 11:56:15.46', "Doge", "Doge with sunglasses",
+            "https://ih1.redbubble.net/image.264246449.9046/poster%2C210x230%2Cf8f8f8-pad%2C210x230%2Cf8f8f8.lite-1u1.jpg",
+            0);
     
-INSERT INTO books
-	(book_id, topic_id, book_name, author_id, is_available)
+INSERT INTO users
+        (user_id, username, created, password)
 VALUES
-    (2, 1, "Basic XML", 2, true);
+        (1, "Meme Lord", '2018-04-20 12:51:30.56', "password1");
 
-INSERT INTO books
-	(book_id, topic_id, book_name, author_id, is_available)
+INSERT INTO users
+        (user_id, username, created, password)
 VALUES
-    (3, 2, "Intro JSP", 2, true);
-    
-INSERT INTO books
-	(book_id, topic_id, book_name, author_id, is_available)
+        (2, "Memerton", '2018-04-21 12:51:30.56', "password2");
+
+INSERT INTO comments
+        (comment_id, post_id, author_id, created, comment)
 VALUES
-    (4, 2, "Basic JSP", 1, true);
-    
-INSERT INTO topics
-	(topic_id, topic_name)
-VALUES
-	(1, "XML");
-    
-INSERT INTO topics
-	(topic_id, topic_name)
-VALUES
-    (2, "JSP");
-    
-INSERT INTO authors
-	(author_id, author_name)
-VALUES
-	(1, "Tim Bray");
-    
-INSERT INTO authors
-	(author_id, author_name)
-VALUES
-    (2, "Bert Bos");
+        (1, 1, 2, '2018-04-22 12:51:30.56', "Great meme!");
